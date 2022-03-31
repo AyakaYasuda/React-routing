@@ -55,14 +55,17 @@ export const addQuote = async quoteData => {
   return null;
 };
 
-export const addComment = async (commentData, quoteId) => {
-  const response = await fetch(`${FIREBASE_DOMAIN}/comments/${quoteId}.json`, {
-    method: "POST",
-    body: JSON.stringify(commentData),
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+export const addComment = async requestData => {
+  const response = await fetch(
+    `${FIREBASE_DOMAIN}/comments/${requestData.quoteId}.json`,
+    {
+      method: "POST",
+      body: JSON.stringify(requestData.commentData),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
   const data = response.json();
 
   if (!response.ok) {
@@ -74,7 +77,7 @@ export const addComment = async (commentData, quoteId) => {
 
 export const getAllComments = async quoteId => {
   const response = await fetch(`${FIREBASE_DOMAIN}/comments/${quoteId}.json`);
-  const data = response.json();
+  const data = await response.json();
 
   if (!response.ok) {
     throw new Error(data.message || "Couldn't fetch comments");
@@ -85,7 +88,7 @@ export const getAllComments = async quoteId => {
   for (const key in data) {
     const commentObj = {
       id: key,
-      ...data(key),
+      ...data[key],
     };
 
     transformedComments.push(commentObj);
